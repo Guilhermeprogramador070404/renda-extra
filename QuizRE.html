@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qual é o seu perfil pra ganhar renda extra?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101d2b;
+    --card:#182d40;
+    --card-line: rgba(246,239,228,0.10);
+    --ink:#f3ede0;
+    --ink-soft:#a9bccd;
+    --gold:#e0b563;
+    --mint:#5fd1a3;
+    --mint-deep:#37a980;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(224,181,99,0.10), transparent 45%),
+      radial-gradient(circle at 85% 92%, rgba(95,209,163,0.08), transparent 50%),
+      var(--bg);
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .stage{width:100%; max-width:560px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-line);
+    border-radius:22px;
+    padding:40px 36px 34px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(224,181,99,0.06), transparent 30%);
+    pointer-events:none;
+  }
+  .chart-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:8px;
+    height:56px;
+    margin-bottom:10px;
+  }
+  .bar{
+    width:14px;
+    border-radius:4px 4px 0 0;
+    background:linear-gradient(180deg, var(--mint), var(--mint-deep));
+    transform-origin:bottom;
+    transition:transform 0.6s cubic-bezier(.2,.8,.2,1);
+  }
+  .progress-label{
+    text-align:center; font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--ink-soft); margin-bottom:28px;
+  }
+  h1.eyebrow-title{
+    font-family:'Fraunces', serif; font-weight:600; font-size:26px;
+    line-height:1.3; margin:0 0 26px; text-align:center;
+  }
+  .options{display:flex; flex-direction:column; gap:12px;}
+  .option{
+    text-align:left; background:rgba(246,239,228,0.04);
+    border:1px solid var(--card-line); color:var(--ink);
+    font-family:'Work Sans', sans-serif; font-size:16px;
+    padding:16px 18px; border-radius:14px; cursor:pointer;
+    transition:background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+  .option:hover{background:rgba(95,209,163,0.10); border-color:rgba(95,209,163,0.4);}
+  .option:focus-visible{outline:2px solid var(--mint); outline-offset:2px;}
+  .option:active{transform:scale(0.99);}
+  .intro-copy, .result-copy{
+    color:var(--ink-soft); font-size:15.5px; line-height:1.6;
+    text-align:center; margin:0 0 28px;
+  }
+  .cta-button{
+    display:block; width:100%; text-align:center; text-decoration:none;
+    background:linear-gradient(135deg, var(--mint), var(--mint-deep));
+    color:#0a2018; font-family:'Work Sans', sans-serif; font-weight:700;
+    font-size:17px; padding:17px 20px; border-radius:14px; border:none;
+    cursor:pointer; margin-top:8px;
+    box-shadow:0 14px 30px -10px rgba(95,209,163,0.55);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta-button:hover{transform:translateY(-1px); box-shadow:0 18px 36px -10px rgba(95,209,163,0.7);}
+  .cta-button:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  .result-tag-wrap{text-align:center;}
+  .result-tag{
+    display:inline-block; font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--gold);
+    border:1px solid rgba(224,181,99,0.4); padding:6px 14px;
+    border-radius:999px; margin:0 auto 18px;
+  }
+  h2.result-title{
+    font-family:'Fraunces', serif; font-weight:600; font-size:28px;
+    text-align:center; margin:0 0 14px; line-height:1.25;
+  }
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadeUp 0.45s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+  @media (prefers-reduced-motion: reduce){.screen.active{animation:none;} .cta-button:hover{transform:none;}}
+  @media (max-width:480px){.card{padding:30px 22px 26px;} h1.eyebrow-title{font-size:22px;} h2.result-title{font-size:24px;}}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="card">
+
+    <div class="chart-wrap">
+      <div class="bar" id="bar1" style="height:56px; transform:scaleY(0.1);"></div>
+      <div class="bar" id="bar2" style="height:56px; transform:scaleY(0.1);"></div>
+      <div class="bar" id="bar3" style="height:56px; transform:scaleY(0.1);"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">Início</div>
+
+    <div class="screen active" id="screen-intro">
+      <h1 class="eyebrow-title">Qual é o seu perfil pra ganhar renda extra em 2026?</h1>
+      <p class="intro-copy">5 perguntas rápidas (menos de 1 minuto) pra descobrir qual caminho de renda extra combina com a sua rotina e suas habilidades.</p>
+      <button class="cta-button" onclick="goToQuestion(0)">Começar o teste</button>
+    </div>
+
+    <div class="screen" id="screen-questions">
+      <h1 class="eyebrow-title" id="questionText"></h1>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="screen" id="screen-result">
+      <div class="result-tag-wrap"><span class="result-tag" id="resultTag">Seu perfil</span></div>
+      <h2 class="result-title" id="resultTitle"></h2>
+      <p class="result-copy" id="resultCopy"></p>
+      <a class="cta-button" id="ctaButton" href="#" target="_blank" rel="noopener">Quero começar minha renda extra</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const CHECKOUT_URL = "https://pay.kiwify.com.br/cQaloAC";
+
+const questions = [
+  {
+    text: "O que mais te trava hoje pra ganhar uma renda extra?",
+    options: [
+      { label: "Tenho tempo, mas não sei o que fazer com ele", weights: {disponivel:2} },
+      { label: "Tenho uma habilidade, mas não sei transformar em dinheiro", weights: {habilidade:2} },
+      { label: "Quero usar a internet, mas não sei por onde começar", weights: {redes:2} },
+      { label: "Não sei nem qual caminho seguir", weights: {zero:2} }
+    ]
+  },
+  {
+    text: "Quanto tempo por semana você poderia dedicar a isso?",
+    options: [
+      { label: "Menos de 3 horas por semana", weights: {habilidade:1} },
+      { label: "Entre 3 e 8 horas por semana", weights: {redes:1} },
+      { label: "Mais de 8 horas por semana", weights: {disponivel:1} },
+      { label: "Ainda não sei, depende de como for", weights: {zero:1} }
+    ]
+  },
+  {
+    text: "Você já tentou vender algo ou empreender antes?",
+    options: [
+      { label: "Já vendi produtos ou serviços, mas sem constância", weights: {habilidade:1} },
+      { label: "Já criei conteúdo, mas nunca monetizei", weights: {redes:1} },
+      { label: "Tenho tempo livre, mas nunca tentei nada", weights: {disponivel:1} },
+      { label: "Nunca tentei nada disso ainda", weights: {zero:1} }
+    ]
+  },
+  {
+    text: "Qual desses formatos combina mais com você?",
+    options: [
+      { label: "Prefiro fazer algo sozinho(a), no meu ritmo", weights: {} },
+      { label: "Prefiro seguir um passo a passo pronto", weights: {} },
+      { label: "Gosto de aparecer e me comunicar", weights: {} },
+      { label: "Prefiro trabalhar nos bastidores", weights: {} }
+    ]
+  },
+  {
+    text: "Se essa renda extra desse certo, o que ela resolveria primeiro?",
+    options: [
+      { label: "Pagar as contas com mais tranquilidade", key: "contas" },
+      { label: "Ter uma reserva de emergência", key: "reserva" },
+      { label: "Ter mais liberdade de tempo", key: "liberdade" },
+      { label: "Provar pra mim mesma(o) que consigo empreender", key: "prova" }
+    ]
+  }
+];
+
+const profiles = {
+  disponivel: {
+    tag: "Perfil Tempo Livre",
+    title: "Você tem disponibilidade — só falta um caminho certo pra usar ela.",
+    body: "Seu maior recurso já existe: tempo. O que faltava era um direcionamento claro de onde aplicar ele. O Como Ganhar Vida Extra em 2026 mostra caminhos práticos pra transformar horas livres em renda real."
+  },
+  habilidade: {
+    tag: "Perfil Habilidade Escondida",
+    title: "Você já sabe fazer algo que vale dinheiro — falta só monetizar.",
+    body: "O problema nunca foi falta de competência, foi não ter um plano pra cobrar por ela. O Como Ganhar Vida Extra em 2026 te mostra como transformar o que você já sabe fazer em uma fonte de renda organizada."
+  },
+  redes: {
+    tag: "Perfil Digital",
+    title: "A internet é o seu caminho — só falta a estratégia certa.",
+    body: "Você já tem interesse em criar e aparecer online. O que faltava era um método pra transformar isso em renda de verdade, sem depender de sorte ou virar meme. É exatamente esse o foco do Como Ganhar Vida Extra em 2026."
+  },
+  zero: {
+    tag: "Perfil Começo do Zero",
+    title: "Você não precisa de experiência — precisa do primeiro passo certo.",
+    body: "Sem tentativas anteriores, você começa sem vícios ou frustrações acumuladas. O Como Ganhar Vida Extra em 2026 te guia do zero, de forma simples e direta."
+  }
+};
+
+const motivations = {
+  contas: "suas contas passam a caber tranquilamente no seu orçamento",
+  reserva: "você constrói uma reserva de segurança pela primeira vez",
+  liberdade: "você ganha mais liberdade sobre o seu tempo",
+  prova: "você prova pra si mesma(o) que é capaz de empreender"
+};
+
+let current = -1;
+const scores = { disponivel:0, habilidade:0, redes:0, zero:0 };
+let motivationKey = "contas";
+
+const totalSteps = questions.length;
+const progressLabel = document.getElementById('progressLabel');
+const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+
+function setGrowth(step){
+  const fraction = step / totalSteps;
+  const heights = [0.1 + fraction*0.5, 0.1 + Math.max(0,(fraction-0.2))*0.9, 0.1 + Math.max(0,(fraction-0.45))*1.1];
+  bars.forEach((bar, i) => { bar.style.transform = `scaleY(${Math.min(heights[i],1).toFixed(2)})`; });
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goToQuestion(index){
+  current = index;
+  if (index >= questions.length){ showResult(); return; }
+  progressLabel.textContent = `Pergunta ${index+1} de ${questions.length}`;
+  setGrowth(index+1);
+  const q = questions[index];
+  document.getElementById('questionText').textContent = q.text;
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = opt.label;
+    btn.onclick = () => selectOption(opt);
+    container.appendChild(btn);
+  });
+  showScreen('screen-questions');
+}
+
+function selectOption(opt){
+  if (opt.weights){ Object.entries(opt.weights).forEach(([k,v]) => { scores[k] += v; }); }
+  if (opt.key){ motivationKey = opt.key; }
+  goToQuestion(current + 1);
+}
+
+function showResult(){
+  progressLabel.textContent = "Resultado";
+  setGrowth(totalSteps);
+  const topProfile = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  const p = profiles[topProfile];
+  document.getElementById('resultTag').textContent = p.tag;
+  document.getElementById('resultTitle').textContent = p.title;
+  document.getElementById('resultCopy').textContent = `${p.body} Com esse método, ${motivations[motivationKey]}.`;
+  const url = new URL(CHECKOUT_URL);
+  url.searchParams.set('utm_source', 'quiz');
+  url.searchParams.set('utm_content', topProfile);
+  document.getElementById('ctaButton').href = url.toString();
+  showScreen('screen-result');
+}
+</script>
+
+</body>
+</html>
